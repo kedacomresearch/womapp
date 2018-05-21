@@ -18,7 +18,7 @@
           <tr>
             <td>协议类型:</td>
             <td>
-              <select v-model="protocol">
+              <select v-model="protocol" id="protocolSelector">
                 <option v-for="type, index in protocolType" :value="index">{{type}}</option>
               </select>
             </td>
@@ -37,7 +37,7 @@
             <tr>
               <td>呼叫类型:</td>
               <td>
-                <select v-model="call">
+                <select v-model="call" id="callerSelector">
                   <option v-for="type, index in callType" :value="index">{{type}}</option>
                 </select>
               </td>
@@ -94,7 +94,7 @@
                 id: null,
                 protocolType: ['rtspserver', 'webrtc'],
                 callType: ['主叫', '被叫'],
-                call: 0,
+                call: 1,
                 checkedMediaToSend: [],
                 checkedMediaToReceive: [],
                 mountPath: '',
@@ -133,10 +133,10 @@
               };
             }
 
-            //callee
-            if(this.protocol === 1 && this.call === 1) {
+            //webrtc
+            if(this.protocol === 1) {
                 localStorage.signalingBridge = this.signalingBridge;
-                localStorage.caller = false;
+                localStorage.caller = (this.call === 0);
                 localStorage.audioToSend = this.checkedMediaToSend.includes('audio');
                 localStorage.videoToSend = this.checkedMediaToSend.includes('video');
                 localStorage.audioToReceive = this.checkedMediaToReceive.includes('audio');

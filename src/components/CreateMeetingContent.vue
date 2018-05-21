@@ -11,7 +11,7 @@
           <tr>
             <td>类型:</td>
             <td>
-              <select v-model="choosenSessionType">
+              <select v-model="choosenSessionType" id="sessionSelector">
                 <option v-for="type, index in meetingType" :value="index">{{type}}</option>
               </select>
             </td>

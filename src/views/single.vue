@@ -66,8 +66,6 @@
               connection_id: this.session_id
             };
 
-            console.log(audience);
-            console.dir(localStorage);
             axios.post('/wom/livestream.audience', {
               id: this.liveStreamId,
               audience : audience
@@ -90,18 +88,7 @@
 
             let options = {
               success: (mediaElement, originalNode) => {
-                mediaElement.addEventListener('loadedmetadata', () => {
-                  console.log('loadedmetadata:');
-                  console.info(new Date());
-                });
-
-                mediaElement.addEventListener('loadstart', () => {
-                  console.log('loadstart:');
-                  console.info(new Date());
-                });
-                mediaElement.setSrc(`http://localhost:3030/${channel}.webrtc?room=${this.session_id}`);
-
-                this.addAudience();
+                setTimeout(this.addAudience, 1000);
               },
               caller: localStorage.caller ? localStorage.caller : false,
               mediaToReveive: {
@@ -114,7 +101,7 @@
               }
             };
             if(MediaElement) {
-              this.player = new MediaElement('mediaplayer', options);
+              this.player = new MediaElement('mediaplayer', options, mediaFilse);
             }
             }
         }

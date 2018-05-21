@@ -273,7 +273,6 @@
               console.log("ICE Candidate was null, done");
               return;
             }
-            console.log((new Date()).toLocaleTimeString());
             console.log('Sending candidate: ' + JSON.stringify(event.candidate));
             this.ws_conn.send(JSON.stringify({'ice': event.candidate}));
           };
