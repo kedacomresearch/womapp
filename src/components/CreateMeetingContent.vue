@@ -20,7 +20,7 @@
             <tr>
               <td>名称:</td>
               <td>
-                <input type="text" v-model="name" required maxlength="20">
+                <input type="text" v-model="typeName" required maxlength="20">
               </td>
             </tr>
             <tr>
@@ -43,18 +43,18 @@
 
           <template v-if="choosenSessionType === 1">
             <tr>
-              <td>会话主题:</td>
+              <td>名称:</td>
               <td>
-                <input id="capacity" type="text" v-model="meetingname" required placeholder="例如：流媒体" maxlength="20">
+                <input id="capacity" type="text" v-model="typeName" required maxlength="20">
               </td>
             </tr>
 
-            <tr>
+<!--            <tr>
               <td>备注：</td>
               <td>
                 <textarea id="description" v-model="description"  maxlength="200" rows="5" cols="60" required placeholder="200字以内的文字描述"></textarea>
               </td>
-            </tr>
+            </tr>-->
           </template>
 
           <tr>
@@ -76,15 +76,14 @@
         name: 'create-meeting-content',
         data () {
             return {
-                meetingname: '',
                 description: '',
                 groupId: 0,
-                meetingType: ['Live Stream'],
+                meetingType: ['Live Stream', 'Rtsp Test Server'],
                 protocolType: ['rtspclient','rtspserver'],
                 choosenSessionType: undefined,
                 sourceUrl: 'rtsp://172.16.66.65/id=1',
                 protocol: 0,
-                name: null
+                typeName: null
             }
         },
         computed: {
@@ -97,23 +96,44 @@
 
         },
         methods: {
-
           createSession: function () {
-            let self = this;
-            axios.post('/wom/livestream', {
-              "source" : {
-                "name" : this.name,
-                "protocol" : this.protocolType[this.protocol],
-                "url" : this.sourceUrl
+            axios.post('/proxy/wom/livestream', {
+              source : {
+                name : this.typeName,
+                protocol : this.protocolType[this.protocol],
+                url : this.sourceUrl,
+                type: this.meetingType[this.choosenSessionType]
               }
             }).then(res => {
-              self.$router.push({
+              this.$router.push({
                 name: 'Query'
               });
             }).catch(err => {
-                console.log(err);
+              console.log(err.message);
             })
-          }
+          },
+          createTestServer() {
+            axios.post('/proxy/wom/rtsptestserver', {
+              name : this.rtsptestservername
+            }).then(res => {
+              axios.post('/proxy/wom/livestream', {
+                source : {
+                  name : this.rtsptestservername,
+                  protocol : this.protocolType[this.protocol],
+                  url : 'rtsp://127.0.0.1/test',
+                  type: this.meetingType[this.choosenSessionType]
+                }
+              }).then(res => {
+                this.$router.push({
+                  name: 'Query'
+                });
+              }).catch(err => {
+                console.log(err.message);
+              })
+            }).catch(err => {
+              console.log(err.message);
+            });
+          },
         }
     }
 </script>

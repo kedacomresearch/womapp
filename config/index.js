@@ -28,8 +28,8 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/wom/': {
-        target: 'http://localhost:3131'
+      '/proxy/': {
+        target: 'http://localhost:3232'
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

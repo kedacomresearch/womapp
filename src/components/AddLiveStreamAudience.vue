@@ -24,7 +24,7 @@
             </td>
           </tr>
 
-          <template v-if="protocol == 0">
+          <template v-if="protocol != 1">
             <tr>
               <td>挂载地址:</td>
               <td>
@@ -61,7 +61,9 @@
                 <label for="videoToReceive">视频</label>
               </td>
             </tr>
+          </template>
 
+          <template v-if="protocol != 0">
             <tr>
               <td>信令服务器:</td>
               <td>
@@ -69,7 +71,6 @@
               </td>
             </tr>
           </template>
-
 
 
           <tr>
@@ -92,7 +93,7 @@
         data () {
             return {
                 id: null,
-                protocolType: ['rtspserver', 'webrtc'],
+                protocolType: ['rtspserver', 'webrtc', 'rtspanalyzer'],
                 callType: ['主叫', '被叫'],
                 call: 1,
                 checkedMediaToSend: [],
@@ -100,7 +101,7 @@
                 mountPath: '',
                 protocol: 0,
                 name: null,
-                signalingBridge: 'http://localhost:3030/livestream.webrtc'
+                signalingBridge: 'http://localhost:3030/livestream.spectrum'
             }
         },
         computed: {
@@ -117,8 +118,7 @@
 
           createSession: function () {
             let audience;
-            console.log(typeof this.protocol);
-            console.log(this.protocol);
+
             if(this.protocol === 0) {
                 audience = {
                   name: this.name,
@@ -131,6 +131,13 @@
                 protocol : this.protocolType[this.protocol],
                 signalingBridge : this.signalingBridge
               };
+            } else if(this.protocol === 2) {
+              audience = {
+                name: this.name,
+                protocol : this.protocolType[this.protocol],
+                signalingBridge : this.signalingBridge,
+                path : `/${this.mountPath}`
+              };
             }
 
             //webrtc
@@ -141,7 +148,7 @@
                 localStorage.videoToSend = this.checkedMediaToSend.includes('video');
                 localStorage.audioToReceive = this.checkedMediaToReceive.includes('audio');
                 localStorage.videoToReceive = this.checkedMediaToReceive.includes('video');
-                console.dir(localStorage);
+
                 this.$router.push({
                   name: 'Webrtc',
                   params: {
@@ -153,12 +160,26 @@
 
             let self = this;
 
-            axios.post('/wom/livestream.audience', {
+            axios.post('/proxy/wom/livestream.audience', {
                 id: this.id,
                 audience : audience
             }).then(res => {
                 let audienceId = res.data.id;
-                console.log('audienceId: ' + audienceId);
+
+
+              //rtspanalyzer
+              if(this.protocol === 2) {
+                localStorage.signalingBridge = this.signalingBridge;
+
+                this.$router.push({
+                  name: 'rtspanalyzer',
+                  params: {
+                    id: audienceId
+                  }
+                });
+                return;
+              }
+
                 self.$router.push({
                   name: 'Query'
                 });

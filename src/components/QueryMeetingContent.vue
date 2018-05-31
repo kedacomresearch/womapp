@@ -16,10 +16,15 @@
         <td>{{info.name}}</td>
         <td>
           <!--<router-link :to="{ name: info.type, params: { groupId: info.groupId }}">进入会话</router-link>-->
-          <button @click="addAudience(info.id)">添加观众</button>
+          <template v-if="info.type === 'Rtsp Test Server'">
+            <button @click="addAudience(info.id)">添加Rtsp Analyzer</button>
+          </template>
+          <template v-if="info.type === 'Live Stream'">
+            <button @click="addAudience(info.id)">添加观众</button>
+            <button @click="removeLiveStream(info.id, index)">删除</button>
+          </template>
           &nbsp;
-          &nbsp;
-          <button @click="removeLiveStream(info.id, index)">删除</button>
+
         </td>
       </tr>
       </tbody>
@@ -64,16 +69,14 @@
           next();
         },
         created () {
-            console.log(this.$route.params);
-            axios.get('/wom/livestream')
+            axios.get('/proxy/wom/livestream')
               .then(res => {
-                  console.log(res.data);
                   this.livestreamInfo.length = 0;
                   let livestream = JSON.parse(res.data);
                   for(let id in livestream) {
                     this.livestreamInfo.push({
-                      type: 'Live Stream',
-                      name: livestream[id],
+                      type: livestream[id].type,
+                      name: livestream[id].name,
                       id: id
                     })
                   }
@@ -82,9 +85,8 @@
                   throw err;
               });
 
-          axios.get('/wom/livestream.audience')
+          axios.get('/proxy/wom/livestream.audience')
             .then(res => {
-              console.log(res.data);
               this.audienceInfo.length = 0;
               let audience = JSON.parse(res.data);
               for(let id in audience) {
@@ -110,7 +112,7 @@
             })
           },
           deleteAudience(audienceId, liveStreamId, index) {
-              axios.delete(`/wom/livestream.audience?livestreamId=${liveStreamId}&audienceId=${audienceId}`)
+              axios.delete(`/proxy/wom/livestream.audience?livestreamId=${liveStreamId}&audienceId=${audienceId}`)
                 .then(res => {
                   this.audienceInfo.splice(index,1);
                 })
@@ -119,7 +121,7 @@
                 });
           },
           removeLiveStream(id, index) {
-            axios.delete(`/wom/livestream?id=${id}`)
+            axios.delete(`/proxy/wom/livestream?id=${id}`)
               .then(res => {
                   this.livestreamInfo.splice(index,1);
               })

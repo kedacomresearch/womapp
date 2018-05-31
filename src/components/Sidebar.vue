@@ -8,7 +8,8 @@
             </ul>
           <div class="sidebar-grouptitle">测试管理</div>
           <ul class="sidebar-menu">
-            <li><a href="/wom/report/womReport.html">查看测试报告</a></li>
+            <li><a href="/proxy/wom/report/womReport.html">查看测试报告</a></li>
+            <!--<router-link class="sidebar-menuitem" to="/wom/rtsptestserver" tag="li">rtsp test server</router-link>-->
           </ul>
         </div>
     </div>
